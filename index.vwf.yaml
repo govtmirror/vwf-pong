@@ -1,0 +1,6 @@
+---
+extends: http://vwf.example.com/scene.vwf
+children:
+  paddle:
+    extends: http://vwf.example.com/node3.vwf
+    source: paddle.dae
