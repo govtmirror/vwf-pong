@@ -1,6 +1,65 @@
 ---
 extends: http://vwf.example.com/scene.vwf
+methods:
+  initializeCamera:
+  initializeGame:
+  bounce:
 children:
-  paddle:
+  playerOne:
     extends: http://vwf.example.com/node3.vwf
     source: paddle.dae
+    children:
+      paddleMaterial:
+        extends: http://vwf.example.com/material.vwf
+        properties:
+          color: "#ff0000"
+  playerTwo:
+    extends: http://vwf.example.com/node3.vwf
+    source: paddle.dae
+    properties:
+      translation: [470, 0, 0]
+    children:
+      material:
+        extends: http://vwf.example.com/material.vwf
+        properties:
+          color: "#ff0000"
+  ball:
+    extends: http://vwf.example.com/node3.vwf
+    source: ball.dae
+    children:
+      material:
+        extends: http://vwf.example.com/material.vwf
+        properties:
+          color: "#0000ff"
+  board:
+    extends: http://vwf.example.com/node3.vwf
+    source: board.dae
+  dir1:
+    extends: http://vwf.example.com/light.vwf
+    properties:
+      lightType: "point"
+      enable: true
+      distance: 2000
+      intensity: 2
+      color: [ 128, 128, 128 ]
+      translation: [ 400, 400, 900 ]
+camera:
+  translation: [250,-500,100]
+scripts:
+- |
+    this.initialize = function() {
+      this.future( 0 ).initializeCamera();
+      this.future( 0 ).initializeGame();
+    }
+    this.initializeCamera = function() {
+      this.camera.translation = [ 250, -550, 150 ];
+      this.camera.rotation = [ 1, 0, 0, -10 ];
+    }
+    this.initializeGame = function() {
+      this.bounce();
+    }
+    this.bounce = function() {
+      console.log("bouncing");
+      this.ball.translation[0] += 100;
+      this.future( 0.05 ).bounce();  // schedule the next step
+    }

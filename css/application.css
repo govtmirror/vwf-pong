@@ -1,0 +1,8 @@
+#overlay {
+	position: absolute;
+	width: 95%;
+}
+
+#overlay h1 {
+	text-align: center;
+}
