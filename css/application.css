@@ -6,3 +6,13 @@
 #overlay h1 {
 	text-align: center;
 }
+
+#player-one {
+	position: absolute;
+	left: 20px;
+}
+
+#player-two {
+	position: absolute;
+	right: 20px;
+}

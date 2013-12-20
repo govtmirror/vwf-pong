@@ -1,12 +1,11 @@
 ---
 extends: http://vwf.example.com/scene.vwf
-methods:
-  initializeCamera:
-  initializeGame:
 children:
   playerOne:
     extends: http://vwf.example.com/node3.vwf
     source: paddle.dae
+    properties:
+      translation: [-470, 0, 0]
     children:
       paddleMaterial:
         extends: http://vwf.example.com/material.vwf
@@ -15,8 +14,6 @@ children:
   playerTwo:
     extends: http://vwf.example.com/node3.vwf
     source: paddle.dae
-    properties:
-      translation: [470, 0, 0]
     children:
       material:
         extends: http://vwf.example.com/material.vwf
@@ -26,8 +23,8 @@ children:
     extends: http://vwf.example.com/node3.vwf
     source: ball.dae
     properties:
-      xSpeed: 1
-      ySpeed: 3
+      xSpeed: 3
+      ySpeed: 1.5
     children:
       material:
         extends: http://vwf.example.com/material.vwf
@@ -35,23 +32,47 @@ children:
           color: "#0000ff"
     methods:
       bounce: |
-        var topX = 230;
+        var topX = 231;
         var topY = 145;
         var bottomY = -145;
-        var bottomX = -230;
-        //
+        var bottomX = -220;
         var trans = this.translation;
         var newTrans = [ trans[0] + this.xSpeed, trans[1] + this.ySpeed, trans[2] ];
+
+        // Did we hit a wall?
         if (newTrans[1] >= topY) {
-          // Wall was hit
           newTrans[1] = topY;
           this.ySpeed = -this.ySpeed;
         } else if (newTrans[1] <= bottomY) {
           newTrans[1] = bottomY;
           this.ySpeed = -this.ySpeed;
         }
+
+        // Did we hit a paddle?
+        if (newTrans[0] >= topX) {
+          var yPos = this.parent.playerTwo.translation[1];
+          if (newTrans[1] > (yPos + 35) || newTrans[1] < (yPos - 35)) {
+            this.reset();
+            return;
+          } else {
+            newTrans[0] = topX;
+            this.xSpeed = -this.xSpeed;
+          }
+        } else if (newTrans[0] < bottomX) {
+          var yPos = this.parent.playerOne.translation[1];
+          if (newTrans[1] > (yPos + 35) || newTrans[1] < (yPos - 35)) {
+            this.reset();
+            return;
+          } else {
+            newTrans[0] = bottomX;
+            this.xSpeed = -this.xSpeed;
+          }
+        }
         this.translateTo( newTrans );
-        this.future( 0.05 ).bounce();  // schedule the next step
+      reset: |
+        this.translateTo([0,0,0]);
+        this.xSpeed = 2;
+        this.ySpeed = 5;
   board:
     extends: http://vwf.example.com/node3.vwf
     source: board.dae
@@ -64,8 +85,16 @@ children:
       intensity: 2
       color: [ 128, 128, 128 ]
       translation: [ 400, 400, 900 ]
-camera:
-  translation: [250,-500,100]
+properties:
+  keyPressInfo:
+  paddleSpeed: 2 
+  navmode: "none"
+  touchmode: "none"
+methods:
+  initializeCamera:
+  initializeGame:
+  update:
+  movePlayer:
 scripts:
 - |
     this.initialize = function() {
@@ -77,5 +106,42 @@ scripts:
       this.camera.rotation = [ 1, 0, 0, -10 ];
     }
     this.initializeGame = function() {
+      this.update();
+    }
+    this.update = function() {
       this.ball.bounce();
+
+      if (this.keyPressInfo) {
+        for (var keyPress in this.keyPressInfo.keysDown) {
+          switch( keyPress ) {
+            case 'R':
+              this.movePlayer(this.playerOne, +1);
+              break;
+            case 'F':
+              this.movePlayer(this.playerOne, -1);
+              break;
+            case 'O':
+              this.movePlayer(this.playerTwo, +1);
+              break;
+            case 'L':
+              this.movePlayer(this.playerTwo, -1);
+              break;
+            default:
+              break;
+          }
+        }
+      }
+
+      this.future( 1.0/60.0 ).update();  // schedule the next step
+    }
+    this.keyDown = this.keyUp = function(input) {
+      this.keyPressInfo = input;
+    }
+    this.movePlayer = function(player, direction) {
+      var amount = direction * this.paddleSpeed;
+      if (player.translation[1] + amount >= 120 || player.translation[1] + amount <= -120) {
+        player.translateTo( [ player.translation[0], 120 * direction, 0 ] );
+        return;
+      }
+      player.translateBy([0, direction * this.paddleSpeed, 0]);
     }
