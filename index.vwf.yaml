@@ -3,7 +3,6 @@ extends: http://vwf.example.com/scene.vwf
 methods:
   initializeCamera:
   initializeGame:
-  bounce:
 children:
   playerOne:
     extends: http://vwf.example.com/node3.vwf
@@ -26,11 +25,33 @@ children:
   ball:
     extends: http://vwf.example.com/node3.vwf
     source: ball.dae
+    properties:
+      xSpeed: 1
+      ySpeed: 3
     children:
       material:
         extends: http://vwf.example.com/material.vwf
         properties:
           color: "#0000ff"
+    methods:
+      bounce: |
+        var topX = 230;
+        var topY = 145;
+        var bottomY = -145;
+        var bottomX = -230;
+        //
+        var trans = this.translation;
+        var newTrans = [ trans[0] + this.xSpeed, trans[1] + this.ySpeed, trans[2] ];
+        if (newTrans[1] >= topY) {
+          // Wall was hit
+          newTrans[1] = topY;
+          this.ySpeed = -this.ySpeed;
+        } else if (newTrans[1] <= bottomY) {
+          newTrans[1] = bottomY;
+          this.ySpeed = -this.ySpeed;
+        }
+        this.translateTo( newTrans );
+        this.future( 0.05 ).bounce();  // schedule the next step
   board:
     extends: http://vwf.example.com/node3.vwf
     source: board.dae
@@ -56,10 +77,5 @@ scripts:
       this.camera.rotation = [ 1, 0, 0, -10 ];
     }
     this.initializeGame = function() {
-      this.bounce();
-    }
-    this.bounce = function() {
-      console.log("bouncing");
-      this.ball.translation[0] += 100;
-      this.future( 0.05 ).bounce();  // schedule the next step
+      this.ball.bounce();
     }
