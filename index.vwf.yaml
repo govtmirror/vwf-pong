@@ -76,7 +76,7 @@ children:
   board:
     extends: http://vwf.example.com/node3.vwf
     source: board.dae
-  directionalLight:
+  light:
     extends: http://vwf.example.com/light.vwf
     properties:
       distance: 2000
