@@ -76,15 +76,11 @@ children:
   board:
     extends: http://vwf.example.com/node3.vwf
     source: board.dae
-  dir1:
+  directionalLight:
     extends: http://vwf.example.com/light.vwf
     properties:
-      lightType: "point"
-      enable: true
       distance: 2000
-      intensity: 2
-      color: [ 128, 128, 128 ]
-      translation: [ 400, 400, 900 ]
+      translation: [ 400, -400, 900 ]
 properties:
   keyPressInfo:
   paddleSpeed: 2 
