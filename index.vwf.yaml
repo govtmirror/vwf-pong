@@ -40,8 +40,11 @@ children:
         var topY = 145;
         var bottomY = -145;
         var bottomX = -220;
-        var trans = this.translation;
-        var newTrans = [ trans[ 0 ] + this.xSpeed, trans[ 1 ] + this.ySpeed, trans[ 2 ] ];
+        var newTrans = [ 
+          this.translation[ 0 ] + this.xSpeed, 
+          this.translation[ 1 ] + this.ySpeed, 
+          this.translation[ 2 ] 
+        ];
 
         // Did we hit a wall?
         if ( newTrans[ 1 ] >= topY ) {
@@ -108,8 +111,6 @@ scripts:
       this.update();
     }
     this.update = function() {
-      this.ball.bounce();
-
       if ( this.keyPressInfo ) {
         for ( var keyPress in this.keyPressInfo.keysDown ) {
           switch( keyPress ) {
@@ -130,6 +131,8 @@ scripts:
           }
         }
       }
+
+      this.ball.bounce();
 
       this.future( 1.0/60.0 ).update();  // schedule the next step
     }
