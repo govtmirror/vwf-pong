@@ -3,7 +3,6 @@ extends: http://vwf.example.com/scene.vwf
 properties:
   keyPressInfo:
   paddleSpeed: 2.5
-  paddleExtent: 36
 methods:
   initializeCamera:
   update:
@@ -34,13 +33,12 @@ children:
     extends: http://vwf.example.com/node3.vwf
     source: ball.dae
     properties:
-      xSpeed: 3
-      ySpeed: 1.5
+      xSpeed: 2
+      ySpeed: 5
       minY: -145
       maxY: 145
     methods:
       move:
-      reset:
       didHitPaddle:
     children:
       material:
@@ -80,19 +78,19 @@ children:
       };
       this.didHitPaddle = function( paddle, translation ) {
         var yPos = paddle.translation[ 1 ];
-        if ( translation[ 1 ] > ( yPos + this.parent.paddleExtent ) || translation[ 1 ] < ( yPos - this.paddleExtent ) ) {
-          this.reset();
+        var paddleExtent = 36;
+        if ( translation[ 1 ] > ( yPos + paddleExtent ) || translation[ 1 ] < ( yPos - paddleExtent ) ) {
+          // Ball got past the paddle: reset the ball position and speed.
+          this.translateTo( [ 0, 0, 0 ] );
+          this.xSpeed = 2;
+          this.ySpeed = 5;
           return true;
         } else {
+          // Ball hit the paddle: just bounce.
           translation[ 0 ] = paddle.xPos;
           this.xSpeed = -this.xSpeed;
           return false;
         }
-      };
-      this.reset = function() {
-        this.translateTo( [ 0, 0, 0 ] );
-        this.xSpeed = 2;
-        this.ySpeed = 5;
       };
   board:
     extends: http://vwf.example.com/node3.vwf
