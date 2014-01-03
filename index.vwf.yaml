@@ -13,6 +13,7 @@ children:
     extends: http://vwf.example.com/node3.vwf
     source: paddle.dae
     properties:
+      xPos: -220
       translation: [ -470, 0, 0 ]
     children:
       paddleMaterial:
@@ -22,6 +23,8 @@ children:
   playerTwo:
     extends: http://vwf.example.com/node3.vwf
     source: paddle.dae
+    properties:
+      xPos: 231
     children:
       material:
         extends: http://vwf.example.com/material.vwf
@@ -34,12 +37,10 @@ children:
       xSpeed: 3
       ySpeed: 1.5
       paddleExtent: 36
+      minY: -145
+      maxY: 145
     methods:
       bounce: |
-        var topX = 231;
-        var topY = 145;
-        var bottomY = -145;
-        var bottomX = -220;
         var newTrans = [ 
           this.translation[ 0 ] + this.xSpeed, 
           this.translation[ 1 ] + this.ySpeed, 
@@ -47,44 +48,51 @@ children:
         ];
 
         // Did we hit a wall?
-        if ( newTrans[ 1 ] >= topY ) {
-          newTrans[ 1 ] = topY;
+        if ( newTrans[ 1 ] >= this.maxY ) {
+          newTrans[ 1 ] = this.maxY;
           this.ySpeed = -this.ySpeed;
-        } else if ( newTrans[ 1 ] <= bottomY ) {
-          newTrans[ 1 ] = bottomY;
+        } else if ( newTrans[ 1 ] <= this.minY ) {
+          newTrans[ 1 ] = this.minY;
           this.ySpeed = -this.ySpeed;
         }
 
         // Did we hit a paddle?
-        if ( newTrans[ 0 ] >= topX ) {
-          var yPos = this.parent.playerTwo.translation[ 1 ];
-          if ( newTrans[ 1 ] > ( yPos + this.paddleExtent ) || newTrans[ 1 ] < ( yPos - this.paddleExtent ) ) {
-            this.reset();
+        if ( newTrans[ 0 ] >= this.parent.playerTwo.xPos ) {
+          if ( this.didHitPaddle( this.parent.playerTwo, newTrans ) ) {
             return;
-          } else {
-            newTrans[ 0 ] = topX;
-            this.xSpeed = -this.xSpeed;
           }
-        } else if ( newTrans[ 0 ] < bottomX ) {
-          yPos = this.parent.playerOne.translation[ 1 ];
-          if ( newTrans[ 1 ] > ( yPos + this.paddleExtent ) || newTrans[ 1 ] < ( yPos - this.paddleExtent ) ) {
-            this.reset();
+        } else if ( newTrans[ 0 ] <= this.parent.playerOne.xPos ) {
+          if ( this.didHitPaddle( this.parent.playerOne, newTrans ) ) {
             return;
-          } else {
-            newTrans[ 0 ] = bottomX;
-            this.xSpeed = -this.xSpeed;
           }
         }
+
         this.translateTo( newTrans );
       reset: |
-        this.translateTo( [ 0, 0, 0 ] );
-        this.xSpeed = 2;
-        this.ySpeed = 5;
+      didHitPaddle:
     children:
       material:
         extends: http://vwf.example.com/material.vwf
         properties:
           color: "#0000ff"
+    scripts:
+    - |
+      this.didHitPaddle = function( paddle, translation ) {
+        var yPos = paddle.translation[ 1 ];
+        if ( translation[ 1 ] > ( yPos + this.paddleExtent ) || translation[ 1 ] < ( yPos - this.paddleExtent ) ) {
+          this.reset();
+          return true;
+        } else {
+          translation[ 0 ] = paddle.xPos;
+          this.xSpeed = -this.xSpeed;
+          return false;
+        }
+      };
+      this.reset = function() {
+        this.translateTo( [ 0, 0, 0 ] );
+        this.xSpeed = 2;
+        this.ySpeed = 5;
+      };
   board:
     extends: http://vwf.example.com/node3.vwf
     source: board.dae
@@ -144,6 +152,7 @@ scripts:
       if ( player.translation[ 1 ] + amount >= 120 || player.translation[ 1 ] + amount <= -120 ) {
         player.translateTo( [ player.translation[ 0 ], 120 * direction, 0 ] );
         return;
+      } else {
+        player.translateBy( [ 0, direction * this.paddleSpeed, 0 ] );
       }
-      player.translateBy( [ 0, direction * this.paddleSpeed, 0 ] );
     }
