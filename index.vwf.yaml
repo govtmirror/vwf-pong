@@ -99,6 +99,8 @@ scripts:
     this.initializeCamera = function() {
       this.camera.translation = [ 250, -550, 150 ];
       this.camera.rotation = [ 1, 0, 0, -10 ];
+
+      // Disable navigation
       this.camera.touchmode = "none";
       this.camera.navmode = "none";
     }
