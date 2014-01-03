@@ -40,7 +40,17 @@ children:
       minY: -145
       maxY: 145
     methods:
-      bounce: |
+      move:
+      reset:
+      didHitPaddle:
+    children:
+      material:
+        extends: http://vwf.example.com/material.vwf
+        properties:
+          color: "#0000ff"
+    scripts:
+    - |
+      this.move = function() {
         var newTrans = [ 
           this.translation[ 0 ] + this.xSpeed, 
           this.translation[ 1 ] + this.ySpeed, 
@@ -68,15 +78,7 @@ children:
         }
 
         this.translateTo( newTrans );
-      reset: |
-      didHitPaddle:
-    children:
-      material:
-        extends: http://vwf.example.com/material.vwf
-        properties:
-          color: "#0000ff"
-    scripts:
-    - |
+      };
       this.didHitPaddle = function( paddle, translation ) {
         var yPos = paddle.translation[ 1 ];
         if ( translation[ 1 ] > ( yPos + this.paddleExtent ) || translation[ 1 ] < ( yPos - this.paddleExtent ) ) {
@@ -140,7 +142,7 @@ scripts:
         }
       }
 
-      this.ball.bounce();
+      this.ball.move();
 
       this.future( 1.0/60.0 ).update();  // schedule the next step
     }
