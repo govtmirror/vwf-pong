@@ -2,7 +2,7 @@
 extends: http://vwf.example.com/scene.vwf
 properties:
   keyPressInfo:
-  paddleSpeed: 2 
+  paddleSpeed: 2.5 
 methods:
   initializeCamera:
   initializeGame:
