@@ -2,10 +2,10 @@
 extends: http://vwf.example.com/scene.vwf
 properties:
   keyPressInfo:
-  paddleSpeed: 2.5 
+  paddleSpeed: 2.5
+  paddleExtent: 36
 methods:
   initializeCamera:
-  initializeGame:
   update:
   movePlayer:
 children:
@@ -36,7 +36,6 @@ children:
     properties:
       xSpeed: 3
       ySpeed: 1.5
-      paddleExtent: 36
       minY: -145
       maxY: 145
     methods:
@@ -81,7 +80,7 @@ children:
       };
       this.didHitPaddle = function( paddle, translation ) {
         var yPos = paddle.translation[ 1 ];
-        if ( translation[ 1 ] > ( yPos + this.paddleExtent ) || translation[ 1 ] < ( yPos - this.paddleExtent ) ) {
+        if ( translation[ 1 ] > ( yPos + this.parent.paddleExtent ) || translation[ 1 ] < ( yPos - this.paddleExtent ) ) {
           this.reset();
           return true;
         } else {
@@ -107,7 +106,7 @@ scripts:
 - |
     this.initialize = function() {
       this.future( 0 ).initializeCamera();
-      this.future( 0 ).initializeGame();
+      this.future( 0 ).update();
     }
     this.initializeCamera = function() {
       this.camera.translation = [ 250, -550, 150 ];
@@ -116,9 +115,6 @@ scripts:
       // Disable navigation
       this.camera.touchmode = "none";
       this.camera.navmode = "none";
-    }
-    this.initializeGame = function() {
-      this.update();
     }
     this.update = function() {
       if ( this.keyPressInfo ) {
