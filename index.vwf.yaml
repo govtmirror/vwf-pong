@@ -1,5 +1,13 @@
 ---
 extends: http://vwf.example.com/scene.vwf
+properties:
+  keyPressInfo:
+  paddleSpeed: 2 
+methods:
+  initializeCamera:
+  initializeGame:
+  update:
+  movePlayer:
 children:
   playerOne:
     extends: http://vwf.example.com/node3.vwf
@@ -25,11 +33,7 @@ children:
     properties:
       xSpeed: 3
       ySpeed: 1.5
-    children:
-      material:
-        extends: http://vwf.example.com/material.vwf
-        properties:
-          color: "#0000ff"
+      paddleExtent: 36
     methods:
       bounce: |
         var topX = 231;
@@ -51,7 +55,7 @@ children:
         // Did we hit a paddle?
         if ( newTrans[ 0 ] >= topX ) {
           var yPos = this.parent.playerTwo.translation[ 1 ];
-          if ( newTrans[ 1 ] > ( yPos + 35 ) || newTrans[ 1 ] < ( yPos - 35 ) ) {
+          if ( newTrans[ 1 ] > ( yPos + this.paddleExtent ) || newTrans[ 1 ] < ( yPos - this.paddleExtent ) ) {
             this.reset();
             return;
           } else {
@@ -60,7 +64,7 @@ children:
           }
         } else if ( newTrans[ 0 ] < bottomX ) {
           yPos = this.parent.playerOne.translation[ 1 ];
-          if ( newTrans[ 1 ] > ( yPos + 35 ) || newTrans[ 1 ] < ( yPos - 35 ) ) {
+          if ( newTrans[ 1 ] > ( yPos + this.paddleExtent ) || newTrans[ 1 ] < ( yPos - this.paddleExtent ) ) {
             this.reset();
             return;
           } else {
@@ -73,6 +77,11 @@ children:
         this.translateTo( [ 0, 0, 0 ] );
         this.xSpeed = 2;
         this.ySpeed = 5;
+    children:
+      material:
+        extends: http://vwf.example.com/material.vwf
+        properties:
+          color: "#0000ff"
   board:
     extends: http://vwf.example.com/node3.vwf
     source: board.dae
@@ -81,25 +90,17 @@ children:
     properties:
       distance: 2000
       translation: [ 400, -400, 900 ]
-properties:
-  keyPressInfo:
-  paddleSpeed: 2 
-  navmode: "none"
-  touchmode: "none"
-methods:
-  initializeCamera:
-  initializeGame:
-  update:
-  movePlayer:
 scripts:
 - |
     this.initialize = function() {
       this.future( 0 ).initializeCamera();
-      // this.future( 0 ).initializeGame();
+      this.future( 0 ).initializeGame();
     }
     this.initializeCamera = function() {
       this.camera.translation = [ 250, -550, 150 ];
       this.camera.rotation = [ 1, 0, 0, -10 ];
+      this.camera.touchmode = "none";
+      this.camera.navmode = "none";
     }
     this.initializeGame = function() {
       this.update();
