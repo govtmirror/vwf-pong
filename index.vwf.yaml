@@ -39,7 +39,7 @@ children:
       maxY: 145
     methods:
       move:
-      didHitPaddle:
+      dealWithPaddleBounce:
     children:
       material:
         extends: http://vwf.example.com/material.vwf
@@ -64,19 +64,17 @@ children:
         }
 
         // Did we hit a paddle?
-        if ( newTrans[ 0 ] >= this.parent.playerTwo.xPos ) {
-          if ( this.didHitPaddle( this.parent.playerTwo, newTrans ) ) {
-            return;
-          }
-        } else if ( newTrans[ 0 ] <= this.parent.playerOne.xPos ) {
-          if ( this.didHitPaddle( this.parent.playerOne, newTrans ) ) {
-            return;
-          }
+        var ballAtRightSide = ( newTrans[ 0 ] >= this.parent.playerTwo.xPos );
+        var ballAtLeftSide = ( newTrans[ 0 ] <= this.parent.playerOne.xPos );
+        if ( ballAtRightSide ) {
+          this.dealWithPaddleBounce( this.parent.playerTwo, newTrans );
+        } else if ( ballAtLeftSide ) {
+          this.dealWithPaddleBounce( this.parent.playerOne, newTrans );
+        } else {
+          this.translateTo( newTrans );
         }
-
-        this.translateTo( newTrans );
       };
-      this.didHitPaddle = function( paddle, translation ) {
+      this.dealWithPaddleBounce = function( paddle, translation ) {
         var yPos = paddle.translation[ 1 ];
         var paddleExtent = 36;
         if ( translation[ 1 ] > ( yPos + paddleExtent ) || translation[ 1 ] < ( yPos - paddleExtent ) ) {
