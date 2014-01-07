@@ -35,8 +35,6 @@ children:
     properties:
       xSpeed: 2
       ySpeed: 5
-      minY: -145
-      maxY: 145
     methods:
       move:
       dealWithPaddleBounce:
@@ -55,11 +53,13 @@ children:
         ];
 
         // Did we hit a wall?
-        if ( newTrans[ 1 ] >= this.maxY ) {
-          newTrans[ 1 ] = this.maxY;
+        var maxY = 145;
+        var minY = -maxY;
+        if ( newTrans[ 1 ] >= maxY ) {
+          newTrans[ 1 ] = maxY;
           this.ySpeed = -this.ySpeed;
-        } else if ( newTrans[ 1 ] <= this.minY ) {
-          newTrans[ 1 ] = this.minY;
+        } else if ( newTrans[ 1 ] <= minY ) {
+          newTrans[ 1 ] = minY;
           this.ySpeed = -this.ySpeed;
         }
 
