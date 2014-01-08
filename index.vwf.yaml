@@ -71,7 +71,7 @@ children:
         } else if ( ballAtLeftSide ) {
           this.dealWithPaddleBounce( this.parent.playerOne, newTrans );
         } else {
-          this.translateTo( newTrans );
+          this.translation = newTrans;
         }
       };
       this.dealWithPaddleBounce = function( paddle, translation ) {
